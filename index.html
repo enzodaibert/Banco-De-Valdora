@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Valdora</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #0b0d0f;
+  --night2: #111417;
+  --night3: #181c20;
+  --night4: #1f2428;
+  --night5: #282e34;
+  --gold: #c8993a;
+  --gold2: #e0b55a;
+  --gold3: #f5d080;
+  --gold-dim: rgba(200,153,58,0.12);
+  --gold-line: rgba(200,153,58,0.22);
+  --emerald2: #22a06b;
+  --red: #e05555;
+  --text: #e8e4dc;
+  --text2: #9a9285;
+  --text3: #5a5248;
+  --border: rgba(232,228,220,0.07);
+  --border2: rgba(232,228,220,0.04);
+  --shadow2: 0 16px 60px rgba(0,0,0,0.6);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--night);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* LOGIN */
+#screen-login { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
+.login-wrap { display:grid; grid-template-columns:1fr 1fr; max-width:880px; width:100%; min-height:560px; border:1px solid var(--gold-line); border-radius:2px; overflow:hidden; box-shadow:var(--shadow2); }
+.login-left { background:linear-gradient(160deg,var(--night3) 0%,var(--night2) 100%); padding:3rem; display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden; }
+.login-left::before { content:''; position:absolute; bottom:-80px; right:-80px; width:300px; height:300px; border-radius:50%; border:1px solid var(--gold-line); }
+.login-left::after  { content:''; position:absolute; bottom:-40px; right:-40px; width:200px; height:200px; border-radius:50%; border:1px solid var(--gold-line); }
+.bank-emblem { display:flex; flex-direction:column; gap:0.75rem; }
+.emblem-icon { width:52px; height:52px; border:1px solid var(--gold-line); border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; background:var(--gold-dim); }
+.bank-wordmark { font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:300; color:var(--text); letter-spacing:0.03em; line-height:1.1; }
+.bank-wordmark em { color:var(--gold2); font-style:italic; }
+.bank-tagline { font-size:0.72rem; color:var(--text3); letter-spacing:0.2em; text-transform:uppercase; margin-top:0.5rem; }
+.login-stats { display:flex; flex-direction:column; gap:0; position:relative; z-index:1; }
+.login-stat { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text3); letter-spacing:0.06em; padding:0.5rem 0; border-top:1px solid var(--border); }
+.login-stat span:last-child { color:var(--gold2); font-weight:600; }
+.login-right { background:var(--night2); padding:3rem; display:flex; flex-direction:column; justify-content:center; gap:1.5rem; }
+.login-heading { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:400; }
+.login-heading span { color:var(--gold2); }
+.fg { margin-bottom:1.1rem; }
+.fg label { display:block; font-size:0.66rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--text3); margin-bottom:0.45rem; }
+.fg input { width:100%; background:var(--night3); border:1px solid var(--border); border-radius:2px; color:var(--text); font-family:'Syne',sans-serif; font-size:0.88rem; padding:0.75rem 0.9rem; transition:border-color 0.15s; outline:none; }
+.fg input:focus { border-color:var(--gold-line); background:var(--night4); }
+.fg input::placeholder { color:var(--text3); }
+.login-btn { width:100%; background:var(--gold); border:none; border-radius:2px; color:var(--night); font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:0.9rem; cursor:pointer; transition:all 0.18s; }
+.login-btn:hover { background:var(--gold2); box-shadow:0 6px 20px rgba(200,153,58,0.3); }
+.login-divider { display:flex; align-items:center; gap:0.75rem; color:var(--text3); font-size:0.68rem; letter-spacing:0.1em; }
+.login-divider::before,.login-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.add-user-btn { display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.65rem; border:1px dashed var(--border); border-radius:2px; background:transparent; color:var(--text3); font-family:'Syne',sans-serif; font-size:0.78rem; cursor:pointer; transition:all 0.18s; width:100%; }
+.add-user-btn:hover { border-color:var(--gold-line); color:var(--gold2); }
+
+/* APP */
+#screen-app { display:none; min-height:100vh; flex-direction:column; }
+.topbar { height:54px; background:var(--night2); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 1.75rem; gap:1.25rem; position:sticky; top:0; z-index:50; }
+.topbar-logo { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:400; color:var(--text); flex-shrink:0; display:flex; align-items:center; gap:0.6rem; }
+.topbar-logo em { color:var(--gold2); font-style:italic; }
+.topbar-sep { width:1px; height:20px; background:var(--border); flex-shrink:0; }
+.topbar-nav { display:flex; gap:0.1rem; flex:1; }
+.tb-btn { background:transparent; border:none; color:var(--text3); font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:0.4rem 0.85rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+.tb-btn:hover { color:var(--text); background:var(--night4); }
+.tb-btn.active { color:var(--gold2); background:var(--gold-dim); }
+.topbar-user { margin-left:auto; display:flex; align-items:center; gap:0.75rem; flex-shrink:0; }
+.tb-avatar { width:30px; height:30px; border-radius:50%; background:var(--night4); border:1px solid var(--gold-line); display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-weight:700; color:var(--gold2); }
+.tb-username { font-size:0.78rem; font-weight:600; color:var(--text2); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tb-admin-badge { font-size:0.58rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; padding:2px 7px; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--night); border-radius:2px; }
+.tb-logout { background:transparent; border:1px solid var(--border); color:var(--text3); font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:0.3rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+.tb-logout:hover { border-color:#e05555; color:#e05555; }
+.app-main { flex:1; max-width:1020px; margin:0 auto; padding:2rem 1.75rem; width:100%; }
+.page { display:none; animation:fadeIn 0.2s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+/* DASHBOARD */
+.dash-hero { background:var(--night2); border:1px solid var(--border); border-radius:2px; padding:2.5rem; margin-bottom:1.25rem; position:relative; overflow:hidden; }
+.dash-hero::before { content:''; position:absolute; top:0; right:0; width:40%; height:100%; background:linear-gradient(90deg,transparent,rgba(200,153,58,0.03)); pointer-events:none; }
+.dash-hero::after { content:''; position:absolute; top:0; right:160px; width:1px; height:100%; background:linear-gradient(180deg,transparent,var(--gold-line),transparent); }
+.hero-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2rem; }
+.hero-greeting-txt { font-size:0.68rem; color:var(--text3); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.3rem; }
+.hero-user-name { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:400; color:var(--text); letter-spacing:0.02em; line-height:1.1; }
+.hero-company-line { display:flex; align-items:center; gap:0.5rem; margin-top:0.4rem; font-size:0.75rem; color:var(--gold2); }
+.company-dot { width:5px; height:5px; border-radius:50%; background:var(--gold2); flex-shrink:0; }
+.hero-actions { display:flex; gap:0.5rem; align-items:flex-start; position:relative; z-index:1; }
+.hero-btn { background:transparent; border:1px solid var(--border); color:var(--text3); font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:0.45rem 0.85rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+.hero-btn:hover { border-color:var(--text3); color:var(--text); }
+.hero-btn.pix { background:var(--gold); border-color:var(--gold); color:var(--night); }
+.hero-btn.pix:hover { background:var(--gold2); border-color:var(--gold2); box-shadow:0 4px 16px rgba(200,153,58,0.35); }
+.balance-label { font-size:0.66rem; color:var(--text3); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:0.4rem; }
+.balance-amount { font-family:'Cormorant Garamond',serif; font-size:3.2rem; font-weight:300; color:var(--text); letter-spacing:0.02em; line-height:1; transition:filter 0.3s; }
+.balance-amount.blurred { filter:blur(10px); }
+.balance-currency { color:var(--gold2); font-size:1.4rem; margin-right:0.2rem; vertical-align:super; }
+.account-line { margin-top:0.75rem; font-size:0.7rem; color:var(--text3); letter-spacing:0.12em; }
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem; }
+.stat-card { background:var(--night2); border:1px solid var(--border); border-radius:2px; padding:1.25rem 1.5rem; }
+.stat-card .sc-label { font-size:0.66rem; color:var(--text3); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:0.5rem; }
+.stat-card .sc-value { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:400; color:var(--text); }
+.stat-card .sc-sub { font-size:0.68rem; color:var(--text3); margin-top:0.25rem; }
+.section-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:0.75rem; }
+.section-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:400; letter-spacing:0.04em; color:var(--text2); }
+.section-count { font-size:0.68rem; color:var(--text3); letter-spacing:0.1em; }
+.tx-container { background:var(--night2); border:1px solid var(--border); border-radius:2px; overflow:hidden; }
+.tx-row { display:grid; grid-template-columns:36px 1fr auto; gap:0.85rem; align-items:center; padding:0.9rem 1.25rem; border-bottom:1px solid var(--border2); transition:background 0.1s; }
+.tx-row:last-child { border-bottom:none; }
+.tx-row:hover { background:var(--night3); }
+.tx-icon-wrap { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+.tx-icon-wrap.credit { background:rgba(26,107,74,0.2); border:1px solid rgba(34,160,107,0.2); }
+.tx-icon-wrap.debit  { background:rgba(139,26,36,0.15); border:1px solid rgba(192,57,43,0.2); }
+.tx-icon-wrap.system { background:rgba(200,153,58,0.12); border:1px solid var(--gold-line); }
+.tx-party { font-size:0.82rem; font-weight:600; color:var(--text); }
+.tx-meta  { font-size:0.7rem; color:var(--text3); margin-top:1px; }
+.tx-amount { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; }
+.tx-amount.credit { color:var(--emerald2); }
+.tx-amount.debit  { color:var(--red); }
+.tx-amount.system { color:var(--gold2); }
+.tx-time { font-size:0.65rem; color:var(--text3); margin-top:1px; text-align:right; }
+.empty-state { padding:3rem 1rem; text-align:center; color:var(--text3); }
+.empty-state .es-icon { font-size:2rem; margin-bottom:0.75rem; opacity:0.3; }
+.empty-state p { font-size:0.82rem; letter-spacing:0.06em; }
+
+/* PIX */
+.pix-layout { display:grid; grid-template-columns:1fr 360px; gap:1.25rem; align-items:start; }
+.form-panel { background:var(--night2); border:1px solid var(--border); border-radius:2px; padding:2rem; }
+.form-panel-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:400; margin-bottom:0.25rem; letter-spacing:0.02em; }
+.form-panel-sub { font-size:0.75rem; color:var(--text3); margin-bottom:2rem; letter-spacing:0.04em; }
+.fg select { width:100%; background:var(--night3); border:1px solid var(--border); border-radius:2px; color:var(--text); font-family:'Syne',sans-serif; font-size:0.85rem; padding:0.7rem 0.9rem; transition:border-color 0.15s; outline:none; }
+.fg select:focus { border-color:var(--gold-line); background:var(--night4); }
+.fg select option { background:var(--night3); }
+.amount-wrap { position:relative; }
+.amount-pfx { position:absolute; left:0.9rem; top:50%; transform:translateY(-50%); font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--gold2); pointer-events:none; }
+.amount-wrap input { padding-left:2.6rem; font-family:'Cormorant Garamond',serif; font-size:1.1rem; }
+.recip-preview { border:1px solid var(--border); border-radius:2px; padding:0.85rem 1rem; margin-top:0.5rem; display:none; align-items:center; gap:0.75rem; background:var(--night3); animation:fadeIn 0.15s ease; }
+.recip-preview.show { display:flex; }
+.rp-avatar { width:38px; height:38px; border-radius:50%; background:var(--night5); border:1px solid var(--gold-line); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:var(--gold2); flex-shrink:0; }
+.rp-name { font-size:0.85rem; font-weight:600; }
+.rp-acc  { font-size:0.7rem; color:var(--text3); margin-top:1px; }
+.rp-co   { font-size:0.7rem; color:var(--gold2); margin-top:1px; }
+.send-btn { width:100%; background:var(--gold); border:none; border-radius:2px; color:var(--night); font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:0.9rem; cursor:pointer; transition:all 0.18s; margin-top:0.5rem; }
+.send-btn:hover { background:var(--gold2); box-shadow:0 6px 20px rgba(200,153,58,0.3); }
+.history-panel { background:var(--night2); border:1px solid var(--border); border-radius:2px; overflow:hidden; }
+.history-panel-head { padding:1rem 1.25rem; border-bottom:1px solid var(--border); font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3); }
+
+/* PROFILE */
+.profile-layout { display:grid; grid-template-columns:300px 1fr; gap:1.25rem; align-items:start; }
+.profile-card { background:var(--night2); border:1px solid var(--border); border-radius:2px; overflow:hidden; }
+.profile-banner { height:70px; background:linear-gradient(135deg,var(--night3),var(--night4)); position:relative; }
+.profile-banner::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(200,153,58,0.12) 0%,transparent 60%); }
+.profile-card-body { padding:1.25rem; }
+.profile-big-avatar { width:56px; height:56px; border-radius:50%; background:var(--night5); border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:700; color:var(--gold2); margin-top:-28px; position:relative; margin-bottom:0.75rem; letter-spacing:0.05em; }
+.profile-full-name { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:400; letter-spacing:0.02em; }
+.profile-role-line { font-size:0.72rem; color:var(--gold2); margin-top:0.2rem; letter-spacing:0.06em; }
+.profile-info-list { margin-top:1rem; display:flex; flex-direction:column; gap:0; }
+.pil-item { padding:0.6rem 0; border-bottom:1px solid var(--border2); display:flex; flex-direction:column; gap:1px; }
+.pil-item:last-child { border-bottom:none; }
+.pil-label { font-size:0.62rem; color:var(--text3); letter-spacing:0.14em; text-transform:uppercase; }
+.pil-value { font-size:0.82rem; font-weight:500; }
+
+/* MODAL */
+.modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+.modal-bg.open { opacity:1; pointer-events:all; }
+.modal-box { background:var(--night2); border:1px solid var(--border); border-radius:2px; padding:2.5rem; max-width:420px; width:100%; box-shadow:var(--shadow2); transform:translateY(16px); transition:transform 0.2s; position:relative; overflow:hidden; }
+.modal-box::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.modal-bg.open .modal-box { transform:translateY(0); }
+.modal-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:400; margin-bottom:1.5rem; letter-spacing:0.02em; }
+.confirm-table { border:1px solid var(--border); border-radius:2px; overflow:hidden; margin-bottom:1.5rem; }
+.ct-row { display:flex; justify-content:space-between; padding:0.65rem 1rem; border-bottom:1px solid var(--border2); font-size:0.82rem; }
+.ct-row:last-child { border-bottom:none; }
+.ct-row .ct-label { color:var(--text3); }
+.ct-row .ct-value { font-weight:600; color:var(--text); }
+.ct-row.total { background:var(--night3); }
+.ct-row.total .ct-value { font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:var(--gold2); }
+.modal-note { font-size:0.72rem; color:var(--text3); margin-bottom:1.5rem; letter-spacing:0.04em; }
+.modal-btns { display:flex; gap:0.75rem; }
+.modal-btn { flex:1; padding:0.75rem; border-radius:2px; border:none; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+.modal-btn.cancel { background:var(--night4); color:var(--text3); border:1px solid var(--border); }
+.modal-btn.cancel:hover { color:var(--text); }
+.modal-btn.go { background:var(--gold); color:var(--night); }
+.modal-btn.go:hover { background:var(--gold2); box-shadow:0 4px 14px rgba(200,153,58,0.3); }
+
+/* TOAST */
+.toast { position:fixed; bottom:1.75rem; right:1.75rem; background:var(--night3); border:1px solid var(--border); border-left:3px solid var(--gold); color:var(--text); border-radius:2px; padding:0.85rem 1.25rem; font-size:0.8rem; font-weight:500; z-index:300; box-shadow:var(--shadow2); animation:toastSlide 0.25s ease; max-width:300px; letter-spacing:0.03em; }
+.toast.err { border-left-color:var(--red); }
+@keyframes toastSlide { from{transform:translateX(20px);opacity:0} to{transform:none;opacity:1} }
+
+@media(max-width:768px) {
+  .login-wrap { grid-template-columns:1fr; }
+  .login-left { display:none; }
+  .pix-layout { grid-template-columns:1fr; }
+  .profile-layout { grid-template-columns:1fr; }
+  .stats-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="bank-emblem">
+        <div class="emblem-icon">🏛️</div>
+        <div class="bank-wordmark">Banco de<br><em>Valdora</em></div>
+        <div class="bank-tagline">Instituição Financeira de Valdoria</div>
+      </div>
+      <div class="login-stats">
+        <div class="login-stat"><span>Fundado em</span><span>Anno Domini 1204</span></div>
+        <div class="login-stat"><span>Sede</span><span>Torre Dourada, Valdoria</span></div>
+        <div class="login-stat"><span>Rating</span><span>AAA — Valdoria Central</span></div>
+        <div class="login-stat"><span>Moeda</span><span>VLD — Valdorin (V$)</span></div>
+      </div>
+    </div>
+    <div class="login-right">
+      <div>
+        <div class="login-heading">Acesse sua <span>conta</span></div>
+        <div style="font-size:0.72rem;color:var(--text3);margin-top:0.5rem;letter-spacing:0.06em">Digite seu nome de usuário e PIN para continuar</div>
+      </div>
+      <div>
+        <div class="fg">
+          <label>Nome de usuário</label>
+          <input type="text" id="login-username" placeholder="Ex: Theron Valdis" maxlength="40" onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()">
+        </div>
+        <div class="fg">
+          <label>Senha (PIN)</label>
+          <input type="password" id="login-password" placeholder="••••" maxlength="8" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="login-btn" onclick="doLogin()">Entrar na conta</button>
+      </div>
+      <div class="login-divider">ou</div>
+      <button class="add-user-btn" onclick="openNewUserModal()">+ Criar nova conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+  <div class="topbar">
+    <div class="topbar-logo">Banco de <em>Valdora</em></div>
+    <div class="topbar-sep"></div>
+    <nav class="topbar-nav">
+      <button class="tb-btn active" onclick="goPage('dashboard',this)">Início</button>
+      <button class="tb-btn" onclick="goPage('pix',this)">Transferência</button>
+      <button class="tb-btn" onclick="goPage('profile',this)">Minha Conta</button>
+    </nav>
+    <div class="topbar-user">
+      <span class="tb-admin-badge" id="tb-admin-badge" style="display:none">Admin</span>
+      <div class="tb-avatar" id="tb-avatar"></div>
+      <span class="tb-username" id="tb-username"></span>
+      <button class="tb-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="app-main">
+    <div id="page-dashboard" class="page active">
+      <div class="dash-hero">
+        <div class="hero-top">
+          <div>
+            <div class="hero-greeting-txt" id="dash-greeting">Bom dia,</div>
+            <div class="hero-user-name" id="dash-username">—</div>
+            <div class="hero-company-line" id="dash-company"></div>
+          </div>
+          <div class="hero-actions">
+            <button class="hero-btn" onclick="toggleBalance()" id="toggle-bal-btn">Ocultar saldo</button>
+            <button class="hero-btn pix" onclick="goPage('pix',document.querySelectorAll('.tb-btn')[1])">↗ Pix</button>
+          </div>
+        </div>
+        <div>
+          <div class="balance-label">Saldo disponível</div>
+          <div class="balance-amount" id="dash-balance">
+            <span class="balance-currency">V$</span><span id="balance-num">0,00</span>
+          </div>
+          <div class="account-line" id="dash-account-line"></div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="sc-label">Transações no mês</div><div class="sc-value" id="stat-month-tx">0</div><div class="sc-sub">movimentações</div></div>
+        <div class="stat-card"><div class="sc-label">Total recebido</div><div class="sc-value" id="stat-received">V$ 0,00</div><div class="sc-sub">este mês</div></div>
+        <div class="stat-card"><div class="sc-label">Total enviado</div><div class="sc-value" id="stat-sent">V$ 0,00</div><div class="sc-sub">este mês</div></div>
+      </div>
+      <div class="section-head">
+        <div class="section-title">Extrato</div>
+        <div class="section-count" id="tx-count-label"></div>
+      </div>
+      <div class="tx-container" id="tx-list"></div>
+    </div>
+
+    <div id="page-pix" class="page">
+      <div class="pix-layout">
+        <div class="form-panel">
+          <div class="form-panel-title">Transferência Pix</div>
+          <div class="form-panel-sub">Envie instantaneamente para qualquer conta Banco de Valdora</div>
+          <div class="fg">
+            <label>Destinatário</label>
+            <select id="pix-to" onchange="onToChange()">
+              <option value="">Selecione...</option>
+            </select>
+            <div class="recip-preview" id="recip-preview">
+              <div class="rp-avatar" id="rp-av"></div>
+              <div>
+                <div class="rp-name" id="rp-name"></div>
+                <div class="rp-acc" id="rp-acc"></div>
+                <div class="rp-co" id="rp-co"></div>
+              </div>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Valor</label>
+            <div class="amount-wrap">
+              <span class="amount-pfx">V$</span>
+              <input type="number" id="pix-amount" placeholder="0,00" min="0.01" step="0.01" style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;">
+            </div>
+          </div>
+          <div class="fg">
+            <label>Descrição (opcional)</label>
+            <input type="text" id="pix-desc" placeholder="Pagamento, serviços, aluguel..." maxlength="80" style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;">
+          </div>
+          <button class="send-btn" onclick="initPix()">Confirmar transferência</button>
+        </div>
+        <div>
+          <div class="history-panel">
+            <div class="history-panel-head">Transferências enviadas</div>
+            <div id="pix-history-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-profile" class="page">
+      <div class="profile-layout">
+        <div class="profile-card">
+          <div class="profile-banner"></div>
+          <div class="profile-card-body">
+            <div class="profile-big-avatar" id="prof-avatar"></div>
+            <div class="profile-full-name" id="prof-name"></div>
+            <div class="profile-role-line" id="prof-role-line"></div>
+            <div class="profile-info-list" id="prof-info-list"></div>
+          </div>
+        </div>
+        <div class="form-panel">
+          <div class="form-panel-title">Perfil Empresarial</div>
+          <div class="form-panel-sub">Configure as informações da sua empresa vinculada à conta</div>
+          <div class="fg"><label>Nome da empresa</label><input type="text" id="edit-company" placeholder="Ex: Grupo Imperial, Valdoria Corp..." style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+          <div class="fg"><label>Cargo / posição</label><input type="text" id="edit-role" placeholder="Ex: CEO, Diretor, Fundador..." style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+          <div class="fg"><label>Setor de atuação</label><input type="text" id="edit-sector" placeholder="Ex: Financeiro, Mineração, Comércio..." style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+          <button class="send-btn" onclick="saveProfile()" style="margin-top:0">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-pix">
+  <div class="modal-box">
+    <div class="modal-title">Confirmar transferência</div>
+    <div class="confirm-table" id="modal-confirm-table"></div>
+    <div class="modal-note">Esta operação é irreversível. Confirme antes de prosseguir.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-pix')">Cancelar</button>
+      <button class="modal-btn go" id="modal-pix-confirm">Confirmar Pix</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-new-user">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-title">Criar nova conta</div>
+    <div class="fg"><label>Nome completo</label><input type="text" id="nu-name" placeholder="Ex: Theron Valdis, Lyra Solaris..." maxlength="40" style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+    <div class="fg"><label>Empresa (opcional)</label><input type="text" id="nu-company" placeholder="Ex: Grupo Imperial..." style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+    <div class="fg"><label>Cargo (opcional)</label><input type="text" id="nu-role" placeholder="Ex: CEO, Diretor..." style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+    <div class="fg"><label>Senha de acesso (PIN — 4 a 8 dígitos)</label><input type="password" id="nu-pin" placeholder="••••" maxlength="8" style="width:100%;background:var(--night3);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.85rem;padding:0.7rem 0.9rem;outline:none;"></div>
+    <div style="font-size:0.72rem;color:var(--text3);margin-bottom:1.5rem">Novo correntista recebe <strong style="color:var(--gold2)">V$ 50.000,00</strong> como saldo inicial.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeModal('modal-new-user')">Cancelar</button>
+      <button class="modal-btn go" onclick="createUser()">Abrir conta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DB_KEY = 'VALDORA_DB';
+
+function getDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || null; }
+  catch(e) { return null; }
+}
+
+function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function initDB() {
+  let db = getDB();
+  if(!db) {
+    db = {
+      users: [{
+        id: 1, user: 'Admin', pass: 'ADMIN', pix: 'admin@valdora',
+        balance: 999999999, isAdmin: true, company: 'Banco de Valdora',
+        role: 'Soberano Fundador', sector: 'Financeiro',
+        accountNumber: '000001-1', createdAt: Date.now(), tx: [],
+      }],
+      nextId: 2,
+    };
+    saveDB(db);
+  }
+  let changed = false;
+  db.users.forEach(u => {
+    if(!u.accountNumber) { u.accountNumber = String(100000 + u.id) + '-' + ((u.id % 9)+1); changed=true; }
+    if(!u.company)   { u.company=''; changed=true; }
+    if(!u.role)      { u.role=''; changed=true; }
+    if(!u.sector)    { u.sector=''; changed=true; }
+    if(!u.createdAt) { u.createdAt=Date.now(); changed=true; }
+    if(!u.tx)        { u.tx=[]; changed=true; }
+  });
+  if(!db.nextId) { db.nextId = (Math.max(...db.users.map(u=>u.id))||1)+1; changed=true; }
+  if(changed) saveDB(db);
+  return db;
+}
+
+let currentUid = null;
+let balHidden   = false;
+let pendingPix  = null;
+
+function initials(name) {
+  if(!name) return '?';
+  const p = name.trim().split(' ');
+  return p.length>1 ? (p[0][0]+p[p.length-1][0]).toUpperCase() : p[0].slice(0,2).toUpperCase();
+}
+function fmt(n) { return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function curUser() { const db=getDB(); return db?db.users.find(u=>u.id===currentUid):null; }
+
+// ── LOGIN ──
+function doLogin() {
+  const name = document.getElementById('login-username').value.trim();
+  const pin  = document.getElementById('login-password').value;
+  if(!name) return toast('Digite seu nome de usuário', true);
+  if(!pin)  return toast('Digite seu PIN', true);
+  const db = getDB();
+  const u  = db.users.find(x => x.user.toLowerCase() === name.toLowerCase());
+  if(!u)         return toast('Usuário não encontrado', true);
+  if(pin !== u.pass) return toast('PIN incorreto', true);
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  currentUid = u.id;
+  showApp();
+}
+
+function openNewUserModal() {
+  ['nu-name','nu-company','nu-role','nu-pin'].forEach(id=>document.getElementById(id).value='');
+  openModal('modal-new-user');
+  setTimeout(()=>document.getElementById('nu-name').focus(),100);
+}
+
+function createUser() {
+  const name    = document.getElementById('nu-name').value.trim();
+  const company = document.getElementById('nu-company').value.trim();
+  const role    = document.getElementById('nu-role').value.trim();
+  const pin     = document.getElementById('nu-pin').value;
+  if(!name)         return toast('Digite seu nome',true);
+  if(pin.length<4)  return toast('PIN deve ter pelo menos 4 dígitos',true);
+  const db = initDB();
+  if(db.users.find(u=>u.user.toLowerCase()===name.toLowerCase())) return toast('Nome já cadastrado',true);
+  const id  = db.nextId++;
+  const acc = String(100000+id)+'-'+((id%9)+1);
+  db.users.push({
+    id, user:name, pass:pin,
+    pix: name.toLowerCase().replace(/\s+/g,'.')+'.@valdora',
+    balance: 50000, isAdmin: false,
+    company, role, sector:'', accountNumber: acc, createdAt: Date.now(), tx: [],
+  });
+  saveDB(db);
+  closeModal('modal-new-user');
+  toast(`Conta de ${name} criada! Faça login para acessar.`);
+}
+
+function showApp() {
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='flex';
+  const u = curUser();
+  document.getElementById('tb-avatar').textContent   = initials(u.user);
+  document.getElementById('tb-username').textContent = u.user;
+  document.getElementById('tb-admin-badge').style.display = u.isAdmin ? '' : 'none';
+  goPage('dashboard', document.querySelector('.tb-btn'));
+}
+
+function doLogout() {
+  currentUid=null; balHidden=false;
+  document.getElementById('screen-app').style.display='none';
+  document.getElementById('screen-login').style.display='flex';
+  setTimeout(()=>document.getElementById('login-username').focus(),100);
+}
+
+function goPage(id,btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='pix')       renderPixPage();
+  if(id==='profile')   renderProfile();
+}
+
+function renderDashboard() {
+  const u=curUser(); if(!u) return;
+  const hr=new Date().getHours();
+  document.getElementById('dash-greeting').textContent = hr<12?'Bom dia,':hr<18?'Boa tarde,':'Boa noite,';
+  document.getElementById('dash-username').textContent = u.user;
+  document.getElementById('dash-company').innerHTML = u.company
+    ? `<span class="company-dot"></span><span>${esc(u.company)}${u.role?' — '+esc(u.role):''}</span>`
+    : `<span style="color:var(--text3);font-size:0.72rem">Sem empresa cadastrada</span>`;
+  document.getElementById('balance-num').textContent = fmt(u.balance);
+  document.getElementById('dash-account-line').textContent = `Ag. 0001-Valdoria · Cc. ${u.accountNumber}`;
+  if(balHidden) document.getElementById('dash-balance').classList.add('blurred');
+  else          document.getElementById('dash-balance').classList.remove('blurred');
+  const now=new Date();
+  const myTxs=(u.tx||[]).slice().sort((a,b)=>b.ts-a.ts);
+  const thisMonth=myTxs.filter(t=>{const d=new Date(t.ts||0);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const received=thisMonth.filter(t=>t.type==='credit').reduce((s,t)=>s+t.amount,0);
+  const sent=thisMonth.filter(t=>t.type==='debit').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('stat-month-tx').textContent=thisMonth.length;
+  document.getElementById('stat-received').textContent='V$ '+fmt(received);
+  document.getElementById('stat-sent').textContent='V$ '+fmt(sent);
+  document.getElementById('tx-count-label').textContent=myTxs.length+' no total';
+  renderTxList(myTxs, document.getElementById('tx-list'));
+}
+
+function renderTxList(txs, container) {
+  if(!txs.length){container.innerHTML='<div class="empty-state"><div class="es-icon">↔</div><p>Nenhuma transação ainda</p></div>';return;}
+  container.innerHTML=txs.slice(0,30).map(t=>{
+    const isCredit=t.type==='credit';
+    const isSystem=t.party==='INTERVENÇÃO IMPERIAL'||t.party==='Banco de Valdora';
+    const cls=isSystem?'system':isCredit?'credit':'debit';
+    const icon=isSystem?'🏛':isCredit?'↙':'↗';
+    const party=isCredit?`Recebido de ${esc(t.party||'—')}`:`Enviado para ${esc(t.party||'—')}`;
+    const desc=t.description?` · ${esc(t.description)}`:'';
+    const sign=isCredit?'+':'−';
+    return `<div class="tx-row">
+      <div class="tx-icon-wrap ${cls}">${icon}</div>
+      <div><div class="tx-party">${isSystem?esc(t.party||'—'):party}${desc}</div><div class="tx-meta">${fmtDate(t.ts||0)}</div></div>
+      <div class="tx-right"><div class="tx-amount ${cls}">${sign} V$ ${fmt(t.amount)}</div><div class="tx-time">${fmtTime(t.ts||0)}</div></div>
+    </div>`;
+  }).join('');
+}
+
+window.toggleBalance=function(){
+  balHidden=!balHidden;
+  document.getElementById('dash-balance').classList.toggle('blurred',balHidden);
+  document.getElementById('toggle-bal-btn').textContent=balHidden?'Mostrar saldo':'Ocultar saldo';
+};
+
+function renderPixPage() {
+  const db=getDB(); if(!db) return;
+  const me=curUser();
+  const sel=document.getElementById('pix-to');
+  sel.innerHTML='<option value="">Selecione o destinatário...</option>';
+  db.users.forEach(u=>{
+    if(u.id===currentUid) return;
+    const o=document.createElement('option');
+    o.value=u.id; o.textContent=u.user+' · '+u.pix;
+    o.dataset.name=u.user; o.dataset.acc=u.pix; o.dataset.co=u.company||''; o.dataset.role=u.role||'';
+    sel.appendChild(o);
+  });
+  document.getElementById('pix-amount').value='';
+  document.getElementById('pix-desc').value='';
+  document.getElementById('recip-preview').classList.remove('show');
+  const hist=(me.tx||[]).filter(t=>t.type==='debit').sort((a,b)=>b.ts-a.ts).slice(0,8);
+  const hEl=document.getElementById('pix-history-list');
+  if(!hist.length){hEl.innerHTML='<div class="empty-state" style="padding:2rem"><p>Nenhuma transferência enviada</p></div>';}
+  else{hEl.innerHTML=hist.map(t=>`<div class="tx-row" style="padding:0.75rem 1.25rem">
+    <div class="tx-icon-wrap debit" style="width:30px;height:30px;font-size:0.75rem">↗</div>
+    <div><div class="tx-party" style="font-size:0.78rem">${esc(t.party||'—')}</div><div class="tx-meta">${fmtDate(t.ts||0)}</div></div>
+    <div class="tx-right"><div class="tx-amount debit" style="font-size:0.9rem">− V$ ${fmt(t.amount)}</div></div>
+  </div>`).join('');}
+}
+
+window.onToChange=function(){
+  const sel=document.getElementById('pix-to');
+  const opt=sel.options[sel.selectedIndex];
+  const prev=document.getElementById('recip-preview');
+  if(!sel.value){prev.classList.remove('show');return;}
+  document.getElementById('rp-av').textContent=initials(opt.dataset.name);
+  document.getElementById('rp-name').textContent=opt.dataset.name;
+  document.getElementById('rp-acc').textContent=opt.dataset.acc;
+  document.getElementById('rp-co').textContent=opt.dataset.co+(opt.dataset.role?' · '+opt.dataset.role:'');
+  prev.classList.add('show');
+};
+
+window.initPix=function(){
+  const toId=parseInt(document.getElementById('pix-to').value);
+  const amount=parseFloat(document.getElementById('pix-amount').value);
+  const desc=document.getElementById('pix-desc').value.trim();
+  const me=curUser(); const db=getDB(); const toUser=db.users.find(u=>u.id===toId);
+  if(!toId) return toast('Selecione o destinatário',true);
+  if(!amount||amount<=0) return toast('Valor inválido',true);
+  if(amount>me.balance) return toast('Saldo insuficiente',true);
+  if(!toUser) return toast('Destinatário não encontrado',true);
+  pendingPix={toId,amount,desc};
+  document.getElementById('modal-confirm-table').innerHTML=`
+    <div class="ct-row"><span class="ct-label">De</span><span class="ct-value">${esc(me.user)}</span></div>
+    <div class="ct-row"><span class="ct-label">Para</span><span class="ct-value">${esc(toUser.user)}</span></div>
+    <div class="ct-row"><span class="ct-label">Chave Pix</span><span class="ct-value">${esc(toUser.pix)}</span></div>
+    ${desc?`<div class="ct-row"><span class="ct-label">Descrição</span><span class="ct-value">${esc(desc)}</span></div>`:''}
+    <div class="ct-row total"><span class="ct-label">Valor</span><span class="ct-value">V$ ${fmt(amount)}</span></div>`;
+  document.getElementById('modal-pix-confirm').onclick=executePix;
+  openModal('modal-pix');
+};
+
+function executePix(){
+  if(!pendingPix) return;
+  const{toId,amount,desc}=pendingPix;
+  const db=getDB(); const me=db.users.find(u=>u.id===currentUid); const toUser=db.users.find(u=>u.id===toId);
+  if(!me||!toUser) return;
+  me.balance-=amount; toUser.balance+=amount;
+  const ts=Date.now();
+  me.tx.push({type:'debit',party:toUser.user,amount,description:desc,ts});
+  toUser.tx.push({type:'credit',party:me.user,amount,description:desc,ts});
+  saveDB(db); pendingPix=null; closeModal('modal-pix');
+  toast(`Pix de V$ ${fmt(amount)} enviado para ${toUser.user}!`);
+  renderPixPage(); renderDashboard();
+}
+
+function renderProfile(){
+  const u=curUser(); if(!u) return;
+  document.getElementById('prof-avatar').textContent=initials(u.user);
+  document.getElementById('prof-name').textContent=u.user;
+  document.getElementById('prof-role-line').textContent=u.role?(u.role+(u.company?' · '+u.company:'')):(u.company||'Sem empresa cadastrada');
+  document.getElementById('prof-info-list').innerHTML=`
+    <div class="pil-item"><div class="pil-label">Conta</div><div class="pil-value" style="letter-spacing:0.1em">${esc(u.accountNumber)}</div></div>
+    <div class="pil-item"><div class="pil-label">Agência</div><div class="pil-value">0001 — Valdoria</div></div>
+    <div class="pil-item"><div class="pil-label">Chave Pix</div><div class="pil-value">${esc(u.pix)}</div></div>
+    <div class="pil-item"><div class="pil-label">Empresa</div><div class="pil-value">${u.company?esc(u.company):'—'}</div></div>
+    <div class="pil-item"><div class="pil-label">Cargo</div><div class="pil-value">${u.role?esc(u.role):'—'}</div></div>
+    <div class="pil-item"><div class="pil-label">Setor</div><div class="pil-value">${u.sector?esc(u.sector):'—'}</div></div>
+    <div class="pil-item"><div class="pil-label">Correntista desde</div><div class="pil-value">${fmtDate(u.createdAt||Date.now())}</div></div>`;
+  document.getElementById('edit-company').value=u.company||'';
+  document.getElementById('edit-role').value=u.role||'';
+  document.getElementById('edit-sector').value=u.sector||'';
+}
+
+window.saveProfile=function(){
+  const db=getDB(); const u=db.users.find(x=>x.id===currentUid);
+  u.company=document.getElementById('edit-company').value.trim();
+  u.role=document.getElementById('edit-role').value.trim();
+  u.sector=document.getElementById('edit-sector').value.trim();
+  saveDB(db); renderProfile(); toast('Perfil atualizado!');
+};
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+window.closeModal=function(id){document.getElementById(id).classList.remove('open');};
+
+function toast(msg,isErr=false){
+  const el=document.createElement('div');
+  el.className='toast'+(isErr?' err':'');
+  el.textContent=msg; document.body.appendChild(el);
+  setTimeout(()=>el.remove(),3400);
+}
+
+initDB();
+setTimeout(()=>document.getElementById('login-username').focus(),200);
+</script>
+</body>
+</html>
